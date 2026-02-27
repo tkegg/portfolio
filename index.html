@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tkegg — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #fafaf8;
+  --surface: #f3f2ee;
+  --card: #ffffff;
+  --border: #e8e6e0;
+  --ink: #1a1a18;
+  --muted: #888880;
+  --accent: #2563eb;
+  --accent2: #059669;
+  --warm: #f59e0b;
+  --mono: 'DM Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Noto Sans JP', sans-serif;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 660px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ── HEADER ── */
+header { padding: 4rem 0 2.5rem; }
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3.5rem;
+}
+
+.logo {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+}
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent2);
+  animation: blink 2.5s ease-in-out infinite;
+}
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2.4rem, 7vw, 3.6rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+h1 em {
+  font-style: italic;
+  color: var(--muted);
+}
+
+.tagline {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 1.4rem;
+  letter-spacing: 0.02em;
+}
+
+.hero-desc {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.85;
+  max-width: 460px;
+  margin-bottom: 2rem;
+}
+.hero-desc strong { color: var(--ink); font-weight: 700; }
+
+.hero-links {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-decoration: none;
+  transition: all 0.18s;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  border: none;
+}
+.btn-primary {
+  background: var(--ink);
+  color: #fff;
+}
+.btn-primary:hover { background: #333; transform: translateY(-1px); }
+.btn-ghost {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--ink);
+}
+.btn-ghost:hover { border-color: var(--ink); transform: translateY(-1px); }
+
+/* ── DIVIDER ── */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5rem 0;
+}
+
+/* ── SECTION LABEL ── */
+.sec-label {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.sec-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── WORK CARDS ── */
+.work-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.work-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.3rem 1.4rem;
+  display: flex;
+  gap: 1.1rem;
+  align-items: flex-start;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.18s;
+  position: relative;
+}
+.work-card:hover {
+  border-color: var(--ink);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
+}
+
+.work-icon {
+  font-size: 1.4rem;
+  width: 44px; height: 44px;
+  min-width: 44px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.work-body { flex: 1; }
+.work-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+  margin-bottom: 0.35rem;
+  color: var(--ink);
+}
+.work-desc {
+  font-size: 0.77rem;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 0.7rem;
+}
+.work-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.tag {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  background: var(--surface);
+}
+.tag.blue {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: var(--accent);
+}
+.tag.green {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: var(--accent2);
+}
+.work-arrow {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+  transition: all 0.18s;
+}
+.work-card:hover .work-arrow {
+  transform: translate(2px, -2px);
+  color: var(--ink);
+}
+
+/* ── SKILLS ── */
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.5rem;
+}
+.skill {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.65rem 0.9rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.18s;
+}
+.skill:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: var(--surface);
+}
+
+/* ── ABOUT ── */
+.about-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.about-row {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0.85rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8rem;
+  align-items: baseline;
+}
+.about-row:last-child { border-bottom: none; }
+.about-key {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  min-width: 76px;
+  letter-spacing: 0.04em;
+  padding-top: 1px;
+}
+.about-val { color: var(--ink); line-height: 1.65; }
+.about-val a { color: var(--accent); text-decoration: none; }
+.about-val a:hover { text-decoration: underline; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 2rem 0 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-text {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+}
+
+/* ── FADE IN ── */
+.fade {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: fadeUp 0.5s ease forwards;
+}
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade:nth-child(1) { animation-delay: 0.0s; }
+.fade:nth-child(2) { animation-delay: 0.07s; }
+.fade:nth-child(3) { animation-delay: 0.14s; }
+.fade:nth-child(4) { animation-delay: 0.21s; }
+.fade:nth-child(5) { animation-delay: 0.28s; }
+.fade:nth-child(6) { animation-delay: 0.35s; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-top fade">
+      <div class="logo">tkegg / portfolio</div>
+      <div class="status"><div class="status-dot"></div>学習中</div>
+    </div>
+
+    <div class="eyebrow fade">Web Developer in Training</div>
+
+    <h1 class="fade">tkegg<br><em>builds things</em></h1>
+
+    <p class="tagline fade">// 大学1年生 · 独学 · HTML / CSS / JS</p>
+
+    <p class="hero-desc fade">
+      python・C言語の授業をきっかけにプログラミングに興味を持ち、
+      <strong>Webフロントエンド</strong>を独学で学習中。
+      天気アプリ・おみくじなど、動くものを作りながらスキルを積み上げています。
+      将来は<strong>自分のWebサービスをリリース</strong>することが目標。
+    </p>
+
+    <div class="hero-links fade">
+      <a href="https://github.com/tkegg" target="_blank" class="btn btn-primary">⬡ GitHub</a>
+      <a href="#works" class="btn btn-ghost">作品を見る ↓</a>
+    </div>
+  </header>
+
+  <hr>
+
+  <section id="works" style="margin-bottom:2.5rem;">
+    <div class="sec-label">Works</div>
+    <div class="work-list">
+
+      <a href="weather.html" class="work-card fade">
+        <div class="work-icon">🌤️</div>
+        <div class="work-body">
+          <div class="work-title">天気アプリ</div>
+          <div class="work-desc">Open-Meteo APIを使って東京の3日分の天気を取得・表示。fetch・非同期処理・DOM操作を実装。</div>
+          <div class="work-tags">
+            <span class="tag blue">JavaScript</span>
+            <span class="tag blue">API連携</span>
+            <span class="tag">HTML</span>
+            <span class="tag">CSS</span>
+            <span class="tag green">動作中</span>
+          </div>
+        </div>
+        <div class="work-arrow">↗</div>
+      </a>
+
+      <a href="omikuji.html" class="work-card fade">
+        <div class="work-icon">🎋</div>
+        <div class="work-body">
+          <div class="work-title">おみくじアプリ</div>
+          <div class="work-desc">ボタンクリックでランダムに運勢を表示。イベントリスナー・ランダム処理を学ぶために制作。</div>
+          <div class="work-tags">
+            <span class="tag blue">JavaScript</span>
+            <span class="tag">HTML</span>
+            <span class="tag">CSS</span>
+            <span class="tag green">動作中</span>
+          </div>
+        </div>
+        <div class="work-arrow">↗</div>
+      </a>
+
+    </div>
+  </section>
+
+  <hr>
+
+  <section style="margin-bottom:2.5rem;">
+    <div class="sec-label">Skills</div>
+    <div class="skill-grid">
+      <div class="skill fade">▸ HTML5</div>
+      <div class="skill fade">▸ CSS3</div>
+      <div class="skill fade">▸ JavaScript</div>
+      <div class="skill fade">▸ Flexbox</div>
+      <div class="skill fade">▸ API連携</div>
+      <div class="skill fade">▸ GitHub</div>
+    </div>
+  </section>
+
+  <hr>
+
+  <section style="margin-bottom:2.5rem;">
+    <div class="sec-label">About</div>
+    <div class="about-card fade">
+      <div class="about-row">
+        <div class="about-key">status</div>
+        <div class="about-val">大学1年生・Webフロントエンドを独学で学習中</div>
+      </div>
+      <div class="about-row">
+        <div class="about-key">learning</div>
+        <div class="about-val">HTML / CSS / JavaScript → React（予定）</div>
+      </div>
+      <div class="about-row">
+        <div class="about-key">goal</div>
+        <div class="about-val">卒業までに自分のWebサービスをリリースする</div>
+      </div>
+      <div class="about-row">
+        <div class="about-key">github</div>
+        <div class="about-val"><a href="https://github.com/tkegg" target="_blank">github.com/tkegg</a></div>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <footer>
+    <div class="footer-text">© 2025 tkegg</div>
+    <div class="footer-text">Built with HTML / CSS / JS</div>
+  </footer>
+
+</div>
+</body>
+</html>
