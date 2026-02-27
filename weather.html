@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天気予報 — tkegg</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #fafaf8;
+  --surface: #f3f2ee;
+  --card: #ffffff;
+  --border: #e8e6e0;
+  --ink: #1a1a18;
+  --muted: #888880;
+  --accent: #2563eb;
+  --accent2: #059669;
+  --mono: 'DM Mono', monospace;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Noto Sans JP', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.container { max-width: 660px; margin: 0 auto; padding: 0 1.5rem; width: 100%; }
+
+/* NAV */
+nav { border-bottom: 1px solid var(--border); padding: 1rem 0; }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.nav-logo:hover { color: var(--ink); }
+.nav-back { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 0.3rem; transition: color 0.2s; }
+.nav-back:hover { color: var(--ink); }
+
+/* MAIN */
+main { flex: 1; padding: 3rem 0; }
+
+.page-eyebrow { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 0.8rem; }
+.page-title { font-family: 'Instrument Serif', serif; font-size: 2.4rem; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.page-title em { font-style: italic; color: var(--muted); }
+.page-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.7; margin-bottom: 2rem; }
+
+/* LOCATION BAR */
+.location-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.location-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent2);
+  animation: blink 2.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.location-name { color: var(--ink); font-weight: 500; }
+.location-updated { margin-left: auto; }
+
+/* TODAY CARD */
+.today-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem 1.8rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  animation: fadeUp 0.5s ease;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+.today-emoji { font-size: 4rem; line-height: 1; }
+.today-body { flex: 1; }
+.today-label { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.3rem; }
+.today-temp {
+  font-family: 'Instrument Serif', serif;
+  font-size: 3.5rem;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+.today-temp sup { font-size: 1.5rem; color: var(--muted); }
+.today-condition { font-size: 0.88rem; color: var(--muted); margin-bottom: 0.8rem; }
+.today-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.today-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+/* FORECAST */
+.forecast-label {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 1.5rem 0 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.forecast-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.7rem;
+}
+.forecast-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.1rem 1rem;
+  text-align: center;
+  transition: all 0.18s;
+  animation: fadeUp 0.5s ease;
+}
+.forecast-card:hover { border-color: var(--ink); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.forecast-day { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 0.6rem; }
+.forecast-emoji { font-size: 1.8rem; margin-bottom: 0.5rem; }
+.forecast-temp { font-family: 'Instrument Serif', serif; font-size: 1.4rem; font-weight: 400; }
+.forecast-temp-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.2rem; }
+.forecast-cond { font-size: 0.68rem; color: var(--muted); margin-top: 0.4rem; line-height: 1.4; }
+
+/* LOADING / ERROR */
+.status-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.loading-dot {
+  display: inline-block;
+  animation: loadDot 1.2s ease-in-out infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes loadDot { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--border); padding: 1rem 0; margin-top: auto; }
+.footer-inner { display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">tkegg / portfolio</a>
+      <a href="index.html" class="nav-back">← 戻る</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <div class="page-eyebrow">Weather Forecast</div>
+    <h1 class="page-title">天気予報<em>（東京）</em></h1>
+    <p class="page-desc">Open-Meteo APIを使って東京の天気を取得・表示しています。<br>APIキー不要・完全無料のサービスを活用しました。</p>
+
+    <div class="location-bar">
+      <div class="location-dot"></div>
+      <span class="location-name">東京都</span>
+      <span>35.6895°N, 139.6917°E</span>
+      <span class="location-updated" id="updatedAt">取得中…</span>
+    </div>
+
+    <div id="weatherContainer">
+      <div class="status-card">
+        <div style="font-size:1.5rem;margin-bottom:0.5rem;">⟳</div>
+        天気データを取得中
+        <span class="loading-dot">.</span><span class="loading-dot">.</span><span class="loading-dot">.</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-text">© 2025 tkegg</div>
+      <div class="footer-text">Powered by Open-Meteo API</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const WMO = {
+  0:  { label: '快晴',     emoji: '☀️' },
+  1:  { label: '晴れ',     emoji: '🌤️' },
+  2:  { label: '一部曇り', emoji: '⛅' },
+  3:  { label: '曇り',     emoji: '☁️' },
+  45: { label: '霧',       emoji: '🌫️' },
+  48: { label: '霧氷',     emoji: '🌫️' },
+  51: { label: '霧雨',     emoji: '🌦️' },
+  53: { label: '霧雨',     emoji: '🌦️' },
+  55: { label: '強い霧雨', emoji: '🌦️' },
+  61: { label: '小雨',     emoji: '🌧️' },
+  63: { label: '雨',       emoji: '🌧️' },
+  65: { label: '大雨',     emoji: '🌧️' },
+  71: { label: '小雪',     emoji: '🌨️' },
+  73: { label: '雪',       emoji: '❄️' },
+  75: { label: '大雪',     emoji: '❄️' },
+  80: { label: 'にわか雨', emoji: '🌦️' },
+  81: { label: 'にわか雨', emoji: '🌦️' },
+  82: { label: '激しい雨', emoji: '⛈️' },
+  95: { label: '雷雨',     emoji: '⛈️' },
+  99: { label: '激しい雷', emoji: '⛈️' },
+};
+
+function getWeather(code) {
+  return WMO[code] || { label: '不明', emoji: '🌡️' };
+}
+
+function getDayLabel(dateStr, index) {
+  if (index === 0) return '今日';
+  if (index === 1) return '明日';
+  const d = new Date(dateStr);
+  return ['日', '月', '火', '水', '木', '金', '土'][d.getDay()] + '曜日';
+}
+
+async function fetchWeather() {
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia/Tokyo&forecast_days=3';
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const now = new Date();
+    document.getElementById('updatedAt').textContent =
+      `更新: ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    const cur = data.current;
+    const daily = data.daily;
+    const todayWeather = getWeather(cur.weathercode);
+
+    const container = document.getElementById('weatherContainer');
+    container.innerHTML = `
+      <div class="today-card">
+        <div class="today-emoji">${todayWeather.emoji}</div>
+        <div class="today-body">
+          <div class="today-label">現在の天気</div>
+          <div class="today-temp">${Math.round(cur.temperature_2m)}<sup>°C</sup></div>
+          <div class="today-condition">${todayWeather.label}</div>
+          <div class="today-meta">
+            <div class="today-meta-item">💧 湿度 ${cur.relativehumidity_2m}%</div>
+            <div class="today-meta-item">💨 風速 ${cur.windspeed_10m} km/h</div>
+            <div class="today-meta-item">🌡️ 最高 ${Math.round(daily.temperature_2m_max[0])}°C</div>
+            <div class="today-meta-item">❄️ 最低 ${Math.round(daily.temperature_2m_min[0])}°C</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="forecast-label">3日間の予報</div>
+      <div class="forecast-grid">
+        ${daily.time.map((date, i) => {
+          const w = getWeather(daily.weathercode[i]);
+          return `
+            <div class="forecast-card">
+              <div class="forecast-day">${getDayLabel(date, i)}</div>
+              <div class="forecast-emoji">${w.emoji}</div>
+              <div class="forecast-temp">${Math.round(daily.temperature_2m_max[i])}°</div>
+              <div class="forecast-temp-sub">${Math.round(daily.temperature_2m_min[i])}° / ${Math.round(daily.temperature_2m_max[i])}°</div>
+              <div class="forecast-cond">${w.label}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  } catch (err) {
+    document.getElementById('weatherContainer').innerHTML = `
+      <div class="status-card">
+        ⚠️ データの取得に失敗しました。<br>
+        <span style="font-size:0.62rem;margin-top:0.4rem;display:block;">ネットワークを確認してください。</span>
+      </div>
+    `;
+  }
+}
+
+fetchWeather();
+</script>
+</body>
+</html>
