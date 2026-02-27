@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>おみくじ — tkegg</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #fafaf8;
+  --surface: #f3f2ee;
+  --card: #ffffff;
+  --border: #e8e6e0;
+  --ink: #1a1a18;
+  --muted: #888880;
+  --accent: #2563eb;
+  --accent2: #059669;
+  --mono: 'DM Mono', monospace;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Noto Sans JP', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.container { max-width: 660px; margin: 0 auto; padding: 0 1.5rem; width: 100%; }
+
+/* NAV */
+nav {
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 0;
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-logo:hover { color: var(--ink); }
+.nav-back {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color 0.2s;
+}
+.nav-back:hover { color: var(--ink); }
+
+/* MAIN */
+main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 0;
+}
+.omikuji-wrap {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.page-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+.page-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 2.6rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+.page-title em { font-style: italic; color: var(--muted); }
+.page-desc {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+
+/* CARD */
+.omikuji-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  margin-bottom: 1.5rem;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+.omikuji-card.has-result {
+  border-color: var(--ink);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
+
+.result-placeholder {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+.result-emoji {
+  font-size: 3rem;
+  margin-bottom: 0.8rem;
+  display: none;
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes popIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.result-text {
+  font-family: 'Instrument Serif', serif;
+  font-size: 3rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  display: none;
+  animation: fadeUp 0.4s ease 0.1s both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.result-message {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 0.6rem;
+  display: none;
+  animation: fadeUp 0.4s ease 0.2s both;
+}
+
+/* FORTUNE COLORS */
+.fortune-大吉 .result-text { color: #d97706; }
+.fortune-中吉 .result-text { color: #2563eb; }
+.fortune-小吉 .result-text { color: var(--accent2); }
+.fortune-吉 .result-text { color: #7c3aed; }
+.fortune-末吉 .result-text { color: var(--muted); }
+.fortune-凶 .result-text { color: #dc2626; }
+.fortune-大凶 .result-text { color: #991b1b; }
+
+/* BTN */
+.draw-btn {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 10px;
+  background: var(--ink);
+  color: white;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s;
+  margin-bottom: 0.8rem;
+}
+.draw-btn:hover { background: #333; transform: translateY(-1px); }
+.draw-btn:active { transform: translateY(0); }
+
+.reset-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.18s;
+  display: none;
+}
+.reset-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+/* HISTORY */
+.history-section {
+  margin-top: 2rem;
+  text-align: left;
+  display: none;
+}
+.history-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.history-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.75rem;
+  animation: fadeUp 0.3s ease;
+}
+.history-num { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); }
+.history-result { font-weight: 700; }
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 1rem 0;
+}
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-text {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--muted);
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">tkegg / portfolio</a>
+      <a href="index.html" class="nav-back">← 戻る</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <div class="omikuji-wrap">
+      <div class="page-eyebrow">Fortune Teller</div>
+      <h1 class="page-title">おみくじ<em>を引く</em></h1>
+      <p class="page-desc">今日の運勢を占ってみましょう。<br>ボタンを押して運命を受け取ってください。</p>
+
+      <div class="omikuji-card" id="card">
+        <div class="result-placeholder" id="placeholder">— ここに結果が表示されます —</div>
+        <div class="result-emoji" id="emoji"></div>
+        <div class="result-text" id="result"></div>
+        <div class="result-message" id="message"></div>
+      </div>
+
+      <button class="draw-btn" id="drawBtn" onclick="draw()">おみくじを引く</button>
+      <button class="reset-btn" id="resetBtn" onclick="reset()">もう一度引く</button>
+
+      <div class="history-section" id="historySection">
+        <div class="history-label">引いた履歴</div>
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-text">© 2025 tkegg</div>
+      <div class="footer-text">Built with HTML / CSS / JS</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const fortunes = [
+  { text: '大吉', emoji: '🌟', message: '最高の運勢です！何事も積極的に挑戦しましょう。' },
+  { text: '中吉', emoji: '✨', message: '良い運勢です。努力が実を結ぶ時期です。' },
+  { text: '小吉', emoji: '🍀', message: 'まずまずの運勢。小さな幸せを大切に。' },
+  { text: '吉',   emoji: '🌸', message: '良いことがありそうです。前向きに過ごしましょう。' },
+  { text: '末吉', emoji: '🌱', message: 'これから運気が上がっていきます。焦らずに。' },
+  { text: '凶',   emoji: '🌧️', message: '今日は慎重に。でも明日はきっと良くなります。' },
+  { text: '大凶', emoji: '⚡', message: '試練の時です。乗り越えれば大きく成長できます。' },
+];
+
+let history = [];
+let count = 0;
+
+function draw() {
+  const picked = fortunes[Math.floor(Math.random() * fortunes.length)];
+  count++;
+  history.unshift({ num: count, ...picked });
+
+  const card = document.getElementById('card');
+  const placeholder = document.getElementById('placeholder');
+  const emoji = document.getElementById('emoji');
+  const result = document.getElementById('result');
+  const message = document.getElementById('message');
+
+  placeholder.style.display = 'none';
+
+  // reset animation
+  emoji.style.display = 'none';
+  result.style.display = 'none';
+  message.style.display = 'none';
+  card.className = 'omikuji-card';
+
+  setTimeout(() => {
+    card.className = `omikuji-card has-result fortune-${picked.text}`;
+    emoji.textContent = picked.emoji;
+    result.textContent = picked.text;
+    message.textContent = picked.message;
+    emoji.style.display = 'block';
+    result.style.display = 'block';
+    message.style.display = 'block';
+  }, 50);
+
+  document.getElementById('drawBtn').style.display = 'none';
+  document.getElementById('resetBtn').style.display = 'block';
+
+  updateHistory();
+}
+
+function reset() {
+  const card = document.getElementById('card');
+  const placeholder = document.getElementById('placeholder');
+  const emoji = document.getElementById('emoji');
+  const result = document.getElementById('result');
+  const message = document.getElementById('message');
+
+  card.className = 'omikuji-card';
+  placeholder.style.display = 'block';
+  emoji.style.display = 'none';
+  result.style.display = 'none';
+  message.style.display = 'none';
+
+  document.getElementById('drawBtn').style.display = 'block';
+  document.getElementById('resetBtn').style.display = 'none';
+}
+
+function updateHistory() {
+  const section = document.getElementById('historySection');
+  const list = document.getElementById('historyList');
+  section.style.display = 'block';
+
+  list.innerHTML = history.slice(0, 5).map(h => `
+    <div class="history-item">
+      <span class="history-num">#${h.num}</span>
+      <span class="history-result">${h.emoji} ${h.text}</span>
+      <span style="font-size:0.7rem;color:var(--muted)">${h.message.slice(0, 16)}…</span>
+    </div>
+  `).join('');
+}
+</script>
+</body>
+</html>
